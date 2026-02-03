@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="lib/pdf.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PDF Viewer</h1>
+        </header>
+        
+        <div class="controls">
+            <div class="file-selector">
+                <label for="pdf-select">Select PDF:</label>
+                <select id="pdf-select">
+                    <option value="">-- Select a PDF --</option>
+                </select>
+            </div>
+            
+            <div class="navigation">
+                <button id="prev-page" disabled>Previous</button>
+                <span id="page-info">
+                    Page <span id="page-num">-</span> of <span id="page-count">-</span>
+                </span>
+                <button id="next-page" disabled>Next</button>
+            </div>
+            
+            <div class="zoom-controls">
+                <button id="zoom-out">Zoom Out</button>
+                <span id="zoom-level">100%</span>
+                <button id="zoom-in">Zoom In</button>
+            </div>
+        </div>
+        
+        <div class="pdf-container">
+            <canvas id="pdf-canvas"></canvas>
+        </div>
+        
+        <div id="loading" class="loading">Loading PDF...</div>
+        <div id="error" class="error"></div>
+    </div>
+    
+    <script src="js/viewer.js"></script>
+</body>
+</html>
