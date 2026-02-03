@@ -1,12 +1,15 @@
 // PDF.js configuration
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
 
+// Constants
+const DEFAULT_SCALE = 1.5;
+
 // Global variables
 let pdfDoc = null;
 let pageNum = 1;
 let pageRendering = false;
 let pageNumPending = null;
-let scale = 1.5;
+let scale = DEFAULT_SCALE;
 
 // DOM elements
 const canvas = document.getElementById('pdf-canvas');
@@ -180,7 +183,7 @@ function onZoomOut() {
  * Update zoom level display
  */
 function updateZoomLevel() {
-    const percentage = Math.round((scale / 1.5) * 100);
+    const percentage = Math.round((scale / DEFAULT_SCALE) * 100);
     zoomLevelSpan.textContent = `${percentage}%`;
 }
 
