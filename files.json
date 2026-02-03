@@ -1,7 +1,17 @@
 [
   {
-    "name": "dl.pdf",
+    "name": "digital questions.pdf",
     "path": "PDFs/dl.pdf",
+    "type": "pdf"
+  },
+  {
+    "name": "digital theory 1.pdf",
+    "path": "PDFs/dlt1.pdf",
+    "type": "pdf"
+  },
+  {
+    "name": "digital theory 2.pdf",
+    "path": "PDFs/dlt2.pdf",
     "type": "pdf"
   }
 ]
