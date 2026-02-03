@@ -13,93 +13,11 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #1a202c;
+      background: #000;
       height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-    }
-
-    .navbar {
-      background: #2d3748;
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      z-index: 100;
-    }
-
-    .navbar-left {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .back-button {
-      background: #667eea;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.95em;
-      transition: all 0.3s ease;
-      text-decoration: none;
-    }
-
-    .back-button:hover {
-      background: #5568d3;
-      transform: translateX(-3px);
-    }
-
-    .back-button svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .file-title {
-      font-size: 1.1em;
-      font-weight: 500;
-      color: #e2e8f0;
-      max-width: 400px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .navbar-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .control-button {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 8px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9em;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .control-button:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.05);
-    }
-
-    .control-button svg {
-      width: 18px;
-      height: 18px;
     }
 
     .viewer-container {
@@ -107,26 +25,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #0f1419;
-      padding: 20px;
-      overflow: auto;
+      background: #000;
+      position: relative;
+      overflow: hidden;
     }
 
     #pdfFrame {
       width: 100%;
       height: 100%;
       border: none;
-      border-radius: 8px;
       background: white;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     }
 
     .image-viewer {
       max-width: 100%;
       max-height: 100%;
       display: none;
-      border-radius: 8px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      object-fit: contain;
     }
 
     .image-viewer.active {
@@ -137,14 +52,14 @@
       color: white;
       text-align: center;
       padding: 40px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 12px;
       max-width: 500px;
     }
 
     .error-message h2 {
       margin-bottom: 15px;
-      color: #fc8181;
+      color: #ff6b6b;
     }
 
     .error-message p {
@@ -152,13 +67,69 @@
       line-height: 1.6;
     }
 
-    .zoom-controls {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 8px;
-      border-radius: 8px;
-      display: flex;
-      gap: 5px;
+    /* Floating toolbar for images */
+    .toolbar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: none;
+      gap: 8px;
       align-items: center;
+      z-index: 1000;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .toolbar.show {
+      display: flex;
+    }
+
+    .toolbar:hover {
+      background: rgba(0, 0, 0, 0.95);
+    }
+
+    .toolbar-button {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .toolbar-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .toolbar-button:active {
+      transform: translateY(0);
+    }
+
+    .toolbar-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .zoom-controls {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px 10px;
+      border-radius: 8px;
     }
 
     .zoom-button {
@@ -167,73 +138,109 @@
       border: none;
       padding: 6px 12px;
       cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.3s ease;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      font-size: 1.1em;
+      font-weight: 600;
+      line-height: 1;
     }
 
     .zoom-button:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
     }
 
     .zoom-level {
       color: white;
-      font-size: 0.9em;
-      min-width: 50px;
+      font-size: 0.85em;
+      min-width: 55px;
       text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Back button - floating in top-left */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95em;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      z-index: 1000;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .back-button:hover {
+      background: rgba(0, 0, 0, 0.95);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateX(-3px);
+    }
+
+    .back-button svg {
+      width: 20px;
+      height: 20px;
     }
 
     @media (max-width: 768px) {
-      .navbar {
+      .toolbar {
+        top: auto;
+        bottom: 20px;
+        right: 50%;
+        transform: translateX(50%);
         flex-wrap: wrap;
-        padding: 10px;
+        justify-content: center;
+        max-width: 90vw;
       }
 
-      .file-title {
-        max-width: 200px;
-      }
-
-      .control-button span {
+      .toolbar-button span {
         display: none;
       }
 
-      .viewer-container {
-        padding: 10px;
+      .back-button {
+        padding: 8px 14px;
+        top: 15px;
+        left: 15px;
+      }
+
+      .back-button span {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <div class="navbar-left">
-      <a href="index.html" class="back-button">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        <span>Back</span>
-      </a>
-      <div class="file-title" id="fileTitle">Loading...</div>
+  <a href="index.html" class="back-button">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    <span>Back</span>
+  </a>
+
+  <div class="toolbar" id="toolbar">
+    <div class="zoom-controls" id="zoomControls">
+      <button class="zoom-button" onclick="zoomOut()">−</button>
+      <span class="zoom-level" id="zoomLevel">100%</span>
+      <button class="zoom-button" onclick="zoomIn()">+</button>
+      <button class="zoom-button" onclick="resetZoom()" style="font-size: 0.75em; padding: 6px 10px;">Reset</button>
     </div>
-    <div class="navbar-right">
-      <div class="zoom-controls" id="zoomControls" style="display: none;">
-        <button class="zoom-button" onclick="zoomOut()">−</button>
-        <span class="zoom-level" id="zoomLevel">100%</span>
-        <button class="zoom-button" onclick="zoomIn()">+</button>
-        <button class="zoom-button" onclick="resetZoom()">Reset</button>
-      </div>
-      <button class="control-button" id="downloadButton">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
-        <span>Download</span>
-      </button>
-      <button class="control-button" onclick="window.print()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-        </svg>
-        <span>Print</span>
-      </button>
-    </div>
-  </nav>
+    <button class="toolbar-button" id="downloadButton">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+      <span>Download</span>
+    </button>
+  </div>
 
   <div class="viewer-container" id="viewerContainer">
     <iframe id="pdfFrame"></iframe>
@@ -258,7 +265,7 @@
     function loadFile(filePath) {
       // Get file name from path
       const fileName = filePath.split('/').pop();
-      document.getElementById('fileTitle').textContent = decodeURIComponent(fileName);
+      document.title = decodeURIComponent(fileName) + ' - File Viewer';
 
       // Determine file type
       const extension = fileName.split('.').pop().toLowerCase();
@@ -288,6 +295,7 @@
       pdfFrame.src = filePath;
       pdfFrame.style.display = 'block';
       document.getElementById('imageViewer').classList.remove('active');
+      // Hide toolbar for PDFs to keep full screen experience
     }
 
     function showImage(filePath) {
@@ -295,7 +303,7 @@
       imageViewer.src = filePath;
       imageViewer.classList.add('active');
       document.getElementById('pdfFrame').style.display = 'none';
-      document.getElementById('zoomControls').style.display = 'flex';
+      document.getElementById('toolbar').classList.add('show');
     }
 
     function showError(message) {
@@ -346,6 +354,11 @@
           e.preventDefault();
           resetZoom();
         }
+      }
+      
+      // ESC key to go back
+      if (e.key === 'Escape') {
+        window.location.href = 'index.html';
       }
     });
   </script>
