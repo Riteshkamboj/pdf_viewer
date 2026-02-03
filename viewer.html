@@ -1,24 +1,349 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PDF Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Viewer</title>
   <style>
-    body, html { height: 100%; margin: 0; }
-    iframe { width: 100%; height: 100vh; border: none; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #1a202c;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .navbar {
+      background: #2d3748;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      z-index: 100;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .back-button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95em;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      background: #5568d3;
+      transform: translateX(-3px);
+    }
+
+    .back-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .file-title {
+      font-size: 1.1em;
+      font-weight: 500;
+      color: #e2e8f0;
+      max-width: 400px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-button {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .control-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .control-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .viewer-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f1419;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    #pdfFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .image-viewer {
+      max-width: 100%;
+      max-height: 100%;
+      display: none;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .image-viewer.active {
+      display: block;
+    }
+
+    .error-message {
+      color: white;
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      max-width: 500px;
+    }
+
+    .error-message h2 {
+      margin-bottom: 15px;
+      color: #fc8181;
+    }
+
+    .error-message p {
+      color: #cbd5e0;
+      line-height: 1.6;
+    }
+
+    .zoom-controls {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      border-radius: 8px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .zoom-button {
+      background: transparent;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+
+    .zoom-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .zoom-level {
+      color: white;
+      font-size: 0.9em;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-wrap: wrap;
+        padding: 10px;
+      }
+
+      .file-title {
+        max-width: 200px;
+      }
+
+      .control-button span {
+        display: none;
+      }
+
+      .viewer-container {
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
-  <iframe id="pdfFrame"></iframe>
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="index.html" class="back-button">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Back</span>
+      </a>
+      <div class="file-title" id="fileTitle">Loading...</div>
+    </div>
+    <div class="navbar-right">
+      <div class="zoom-controls" id="zoomControls" style="display: none;">
+        <button class="zoom-button" onclick="zoomOut()">−</button>
+        <span class="zoom-level" id="zoomLevel">100%</span>
+        <button class="zoom-button" onclick="zoomIn()">+</button>
+        <button class="zoom-button" onclick="resetZoom()">Reset</button>
+      </div>
+      <button class="control-button" id="downloadButton">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        <span>Download</span>
+      </button>
+      <button class="control-button" onclick="window.print()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+        <span>Print</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="viewer-container" id="viewerContainer">
+    <iframe id="pdfFrame"></iframe>
+    <img id="imageViewer" class="image-viewer" alt="Image viewer" />
+  </div>
 
   <script>
+    let currentZoom = 100;
+    let fileType = null;
+
+    // Get file parameter from URL
     const params = new URLSearchParams(window.location.search);
     const file = params.get('file');
-    if (file) {
-      document.getElementById('pdfFrame').src = file;
+
+    if (!file) {
+      document.getElementById('viewerContainer').innerHTML = 
+        '<div class="error-message"><h2>No file specified</h2><p>Please select a file from the home page.</p></div>';
     } else {
-      document.body.innerHTML = "<h2>No file specified</h2>";
+      loadFile(file);
     }
+
+    function loadFile(filePath) {
+      // Get file name from path
+      const fileName = filePath.split('/').pop();
+      document.getElementById('fileTitle').textContent = decodeURIComponent(fileName);
+
+      // Determine file type
+      const extension = fileName.split('.').pop().toLowerCase();
+      const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+      
+      if (imageExtensions.includes(extension)) {
+        fileType = 'image';
+        showImage(filePath);
+      } else if (extension === 'pdf') {
+        fileType = 'pdf';
+        showPDF(filePath);
+      } else {
+        showError('Unsupported file type');
+      }
+
+      // Setup download button
+      document.getElementById('downloadButton').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.href = filePath;
+        link.download = fileName;
+        link.click();
+      });
+    }
+
+    function showPDF(filePath) {
+      const pdfFrame = document.getElementById('pdfFrame');
+      pdfFrame.src = filePath;
+      pdfFrame.style.display = 'block';
+      document.getElementById('imageViewer').classList.remove('active');
+    }
+
+    function showImage(filePath) {
+      const imageViewer = document.getElementById('imageViewer');
+      imageViewer.src = filePath;
+      imageViewer.classList.add('active');
+      document.getElementById('pdfFrame').style.display = 'none';
+      document.getElementById('zoomControls').style.display = 'flex';
+    }
+
+    function showError(message) {
+      document.getElementById('viewerContainer').innerHTML = 
+        `<div class="error-message"><h2>Error</h2><p>${message}</p></div>`;
+    }
+
+    // Zoom controls for images
+    function zoomIn() {
+      if (fileType === 'image') {
+        currentZoom = Math.min(currentZoom + 10, 200);
+        updateZoom();
+      }
+    }
+
+    function zoomOut() {
+      if (fileType === 'image') {
+        currentZoom = Math.max(currentZoom - 10, 50);
+        updateZoom();
+      }
+    }
+
+    function resetZoom() {
+      if (fileType === 'image') {
+        currentZoom = 100;
+        updateZoom();
+      }
+    }
+
+    function updateZoom() {
+      const imageViewer = document.getElementById('imageViewer');
+      imageViewer.style.transform = `scale(${currentZoom / 100})`;
+      imageViewer.style.transition = 'transform 0.3s ease';
+      document.getElementById('zoomLevel').textContent = currentZoom + '%';
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (fileType === 'image') {
+        if (e.key === '+' || e.key === '=') {
+          zoomIn();
+        } else if (e.key === '-' || e.key === '_') {
+          zoomOut();
+        } else if (e.key === '0') {
+          resetZoom();
+        }
+      }
+    });
   </script>
 </body>
 </html>
