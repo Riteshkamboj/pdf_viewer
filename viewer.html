@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>File Viewer</title>
+  <title>Document Viewer</title>
   <style>
     * {
       margin: 0;
@@ -145,6 +145,11 @@
       line-height: 1;
     }
 
+    .zoom-button.reset {
+      font-size: 0.75em;
+      padding: 6px 10px;
+    }
+
     .zoom-button:hover {
       background: rgba(255, 255, 255, 0.15);
     }
@@ -232,7 +237,7 @@
       <button class="zoom-button" onclick="zoomOut()">−</button>
       <span class="zoom-level" id="zoomLevel">100%</span>
       <button class="zoom-button" onclick="zoomIn()">+</button>
-      <button class="zoom-button" onclick="resetZoom()" style="font-size: 0.75em; padding: 6px 10px;">Reset</button>
+      <button class="zoom-button reset" onclick="resetZoom()">Reset</button>
     </div>
     <button class="toolbar-button" id="downloadButton">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -265,7 +270,7 @@
     function loadFile(filePath) {
       // Get file name from path
       const fileName = filePath.split('/').pop();
-      document.title = decodeURIComponent(fileName) + ' - File Viewer';
+      document.title = decodeURIComponent(fileName) + ' - Document Viewer';
 
       // Determine file type
       const extension = fileName.split('.').pop().toLowerCase();
@@ -295,7 +300,7 @@
       pdfFrame.src = filePath;
       pdfFrame.style.display = 'block';
       document.getElementById('imageViewer').classList.remove('active');
-      // Hide toolbar for PDFs to keep full screen experience
+      document.getElementById('toolbar').classList.remove('show');
     }
 
     function showImage(filePath) {
