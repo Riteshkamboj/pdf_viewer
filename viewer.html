@@ -328,6 +328,7 @@
     function updateZoom() {
       const imageViewer = document.getElementById('imageViewer');
       imageViewer.style.transform = `scale(${currentZoom / 100})`;
+      imageViewer.style.transformOrigin = 'center';
       imageViewer.style.transition = 'transform 0.3s ease';
       document.getElementById('zoomLevel').textContent = currentZoom + '%';
     }
@@ -335,11 +336,14 @@
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (fileType === 'image') {
-        if (e.key === '+' || e.key === '=') {
+        if (e.key === '+' || (e.key === '=' && !e.shiftKey)) {
+          e.preventDefault();
           zoomIn();
         } else if (e.key === '-' || e.key === '_') {
+          e.preventDefault();
           zoomOut();
         } else if (e.key === '0') {
+          e.preventDefault();
           resetZoom();
         }
       }

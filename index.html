@@ -277,13 +277,22 @@
     async function loadFiles() {
       try {
         const response = await fetch('files.json');
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('files.json not found');
+          }
+          throw new Error('Failed to load files.json');
+        }
         allFiles = await response.json();
         updateStats();
         displayFiles(allFiles);
       } catch (error) {
         console.error('Error loading files:', error);
+        const message = error.message === 'files.json not found' 
+          ? 'files.json not found. Please create it with your file list.'
+          : 'Error loading files. Please check files.json exists and is valid JSON.';
         document.getElementById('filesList').innerHTML = 
-          '<div class="no-files">Error loading files. Please check files.json exists.</div>';
+          `<div class="no-files">${message}</div>`;
       }
     }
 
@@ -328,6 +337,7 @@
           const img = document.createElement('img');
           img.src = file.path;
           img.alt = file.name;
+          img.loading = 'lazy'; // Lazy load images for better performance
           icon.appendChild(img);
         }
 
