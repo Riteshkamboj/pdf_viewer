@@ -1,3 +1,6 @@
+// Import PDF.js as ES module
+import * as pdfjsLib from '../lib/pdf.min.js';
+
 // PDF.js configuration
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
 
